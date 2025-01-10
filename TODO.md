@@ -10,3 +10,10 @@ In-Memory Order Updater TODO
 
 - [ ] Test coverage to ensure state changes aren't persisted (if someone changes current implementation)
 - [ ] Should we blow up if something tries to persist?
+  - Some thoughts from the initial conservation
+   - "By calling this in memory order updater, we are making a contract with the user that it will be in memory"
+   - "This is really something which theoritically should be covered in tests"
+   - "Our inMemoryOrderUpdater probably shouldnt take a persist true flag"
+   - thinking about other changes to solidus deep in the stack
+   - thinking about users configuring all the configurable classes
+
