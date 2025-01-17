@@ -1,6 +1,8 @@
 In-Memory Order Updater TODO
 ===
 
+- [ ] MUST BE NEXT: Rebase this branch against #6080 and clean up the churn. https://github.com/solidusio/solidus/pull/6080
+
 - [x] Add additional cases to item_total_updater_spec (doesn't currently account for included adjustments)
 - [x] Consider Sofia's recommendation to break this class into POROs to simplify testing
 - [x] Add test coverage for `recalculate_item_total` when line item totals change
