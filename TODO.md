@@ -1,16 +1,16 @@
 In-Memory Order Updater TODO
 ===
 
-- [ ] MUST BE NEXT: Rebase this branch against #6080 and clean up the churn. https://github.com/solidusio/solidus/pull/6080
+- [x] MUST BE NEXT: Rebase this branch against #6080 and clean up the churn. https://github.com/solidusio/solidus/pull/6080
 
 - [x] Add additional cases to item_total_updater_spec (doesn't currently account for included adjustments)
 - [x] Consider Sofia's recommendation to break this class into POROs to simplify testing
 - [x] Add test coverage for `recalculate_item_total` when line item totals change
 - [x] Scope handling of tax adjustments in `InMemoryOrderUpdater` to *not* marked for destruction
 - [x] Scope handling of tax adjustments in `OrderUpdater` to *not* marked for destruction
-- [ ] Ensure order-level tax adjustments (like Colorado delivery) are scoped out of tax total and adjustment total calculations
+- [x] Ensure order-level tax adjustments (like Colorado delivery) are scoped out of tax total and adjustment total calculations
+- [x] Handle persistence in `update_taxes`
 - [ ] Handle persistence in `update_promotions`
-- [ ] Handle persistence in `update_taxes`
 - [ ] Write the `InMemoryOrderAdjuster` (also, should we rename this to `InMemoryOrderPromotionAdjuster`)
 
 - [ ] Test coverage to ensure state changes aren't persisted (if someone changes current implementation)
