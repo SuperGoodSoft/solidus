@@ -12,7 +12,18 @@ class Spree::OrderCancellations
   # allows sending an email when inventory is cancelled
   class_attribute :send_cancellation_mailer
   self.send_cancellation_mailer = true
-
+  # TODO:
+  #
+  # Spree.deprecator.warn "Using the `:send_cancellation_mailer` class
+  # attribute is deprecated in favor of including or omitting the
+  # `Spree::OrderInventoryCancellationMailerSubscriber` from
+  # `Spree::Config.environment.subscribers` in an initializer.
+  #
+  # Right now it seems like there is no clean way to deprecate this class attribute.
+  # Every time a class attribute is set, it re-defines the getter method from scratch.
+  #
+  # We can use Spree.deprecator to deprecate, but since we set the class
+  # attribute in the class definition, this is gonna be REALLY loud.
   def initialize(order)
     @order = order
   end
