@@ -144,10 +144,18 @@ class SolidusAdmin::UI::Table::Component < SolidusAdmin::BaseComponent
 
   def render_header_cell(cell, **attrs)
     cell = cell.call if cell.respond_to?(:call)
-    cell = @data[:class].human_attribute_name(cell) if cell.is_a?(Symbol)
+
+    # Some columns don't have a header (e.g. actions column)
+    sortable = false
+
+    if cell.is_a?(Symbol)
+      sortable = true
+      cell = @data[:class].human_attribute_name(cell)
+      cell_attribute_name = cell.downcase.parameterize(separator: "_")
+    end
     cell = cell.render_in(self) if cell.respond_to?(:render_in)
 
-    content_tag(:th, cell, class: %{
+    content_tag(:th, class: %{
       border-b
       border-gray-100
       px-4
@@ -155,7 +163,20 @@ class SolidusAdmin::UI::Table::Component < SolidusAdmin::BaseComponent
       font-semibold
       vertical-align-middle
       leading-none
-    }, **attrs)
+    }, **attrs) do
+      if sortable
+        content_tag(:a, href: sort_url(cell_attribute_name)) do
+          header_cell = []
+          header_cell << content_tag(:span, cell)
+          if cell_attribute_name == sort_column_name_param
+            header_cell << content_tag(:i, class: "") do
+              icon_tag("arrow-#{sort_icon_direction}-s-line",  class: "inline")
+            end
+          end
+          header_cell.join("&nbsp;").html_safe
+        end
+      end
+    end
   end
 
   def render_data_cell(column, data)
@@ -188,5 +209,25 @@ class SolidusAdmin::UI::Table::Component < SolidusAdmin::BaseComponent
     return false if @sortable.nil?
     return true if @search.nil?
     @search.on_default_scope?
+  end
+
+  def sort_icon_direction
+    sort_direction = params.dig(:q, :sorts)&.split&.last
+    sort_direction == "asc" ? "up" : "down"
+  end
+
+  def sort_column_name_param
+    params.dig(:q, :sorts)&.split&.first
+  end
+
+  def sort_url(column_name)
+    return unless column_name
+
+    sorts_value = "#{column_name} asc"
+
+    if @search.value[:sorts] == sorts_value
+      sorts_value = "#{column_name} desc"
+    end
+    solidus_admin.url_for(q: {sorts: sorts_value}, only_path: true)
   end
 end
