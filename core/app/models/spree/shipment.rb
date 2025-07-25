@@ -206,20 +206,8 @@ module Spree
     # pending    unless order is complete and +order.payment_state+ is +paid+
     # shipped    if already shipped (ie. does not change the state)
     # ready      all other cases
-    def determine_state(order)
-      return 'canceled' if order.canceled?
-      return 'shipped' if shipped?
-      return 'pending' unless order.can_ship?
-      if can_transition_from_pending_to_ready?
-        'ready'
-      else
-        'pending'
-      end
-    end
-
     def recalculate_state
-      self.state =
-        if order.canceled?
+      self.state = if order.canceled?
           "canceled"
         elsif shipped?
           "shipped"
@@ -307,7 +295,8 @@ module Spree
     # called.
     def update_state
       old_state = state
-      new_state = determine_state(order)
+      recalculate_state
+      new_state = state
       if new_state != old_state
         update_columns(
           state: new_state,

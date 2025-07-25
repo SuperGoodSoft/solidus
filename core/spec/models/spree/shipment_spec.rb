@@ -44,38 +44,6 @@ RSpec.describe Spree::Shipment, type: :model do
     expect(shipment).to be_backordered
   end
 
-  context '#determine_state' do
-    it 'returns canceled if order is canceled?' do
-      allow(order).to receive_messages canceled?: true
-      expect(shipment.determine_state(order)).to eq 'canceled'
-    end
-
-    it 'returns pending unless order.can_ship?' do
-      allow(order).to receive_messages can_ship?: false
-      expect(shipment.determine_state(order)).to eq 'pending'
-    end
-
-    it 'returns pending if backordered' do
-      allow(shipment).to receive_messages inventory_units: [mock_model(Spree::InventoryUnit, allow_ship?: false, canceled?: false, shipped?: false)]
-      expect(shipment.determine_state(order)).to eq 'pending'
-    end
-
-    it 'returns shipped when already shipped' do
-      allow(shipment).to receive_messages state: 'shipped'
-      expect(shipment.determine_state(order)).to eq 'shipped'
-    end
-
-    it 'returns pending when unpaid' do
-      allow(order).to receive_messages paid?: false
-      expect(shipment.determine_state(order)).to eq 'pending'
-    end
-
-    it 'returns ready when paid' do
-      allow(order).to receive_messages paid?: true
-      expect(shipment.determine_state(order)).to eq 'ready'
-    end
-  end
-
   context '#recalculate_state' do
     subject(:recalculate_state) { shipment.recalculate_state }
 
@@ -339,8 +307,10 @@ RSpec.describe Spree::Shipment, type: :model do
       end
 
       it "should result in a 'ready' state" do
-        expect(shipment).to receive(:update_columns).with(state: 'ready', updated_at: kind_of(Time))
-        shipment.update_state
+        expect { shipment.update_state }
+          .to change { shipment.reload.state }
+          .from("pending")
+          .to("ready")
       end
       it_should_behave_like 'immutable once shipped'
       it_should_behave_like 'pending if backordered'
@@ -348,10 +318,14 @@ RSpec.describe Spree::Shipment, type: :model do
 
     context "when order has balance due" do
       before { allow(order).to receive_messages paid?: false }
+
       it "should result in a 'pending' state" do
-        shipment.state = 'ready'
-        expect(shipment).to receive(:update_columns).with(state: 'pending', updated_at: kind_of(Time))
-        shipment.update_state
+        shipment.update! state: "ready"
+
+        expect { shipment.update_state }
+          .to change { shipment.reload.state }
+          .from("ready")
+          .to("pending")
       end
       it_should_behave_like 'immutable once shipped'
       it_should_behave_like 'pending if backordered'
@@ -359,10 +333,14 @@ RSpec.describe Spree::Shipment, type: :model do
 
     context "when order has a credit owed" do
       before { allow(order).to receive_messages payment_state: 'credit_owed', paid?: true }
+
       it "should result in a 'ready' state" do
         shipment.state = 'pending'
-        expect(shipment).to receive(:update_columns).with(state: 'ready', updated_at: kind_of(Time))
-        shipment.update_state
+
+        expect { shipment.update_state }
+          .to change { shipment.reload.state }
+          .from("pending")
+          .to("ready")
       end
       it_should_behave_like 'immutable once shipped'
       it_should_behave_like 'pending if backordered'

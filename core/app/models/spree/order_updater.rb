@@ -23,7 +23,6 @@ module Spree
         update_totals
         if order.completed?
           update_payment_state
-          update_shipments
           update_shipment_state
         end
         Spree::Bus.publish(:order_recalculated, order:)
@@ -44,6 +43,8 @@ module Spree
     #
     # The +shipment_state+ value helps with reporting, etc. since it provides a quick and easy way to locate Orders needing attention.
     def update_shipment_state
+      shipments.each(&:recalculate_state)
+
       log_state_change('shipment') do
         order.shipment_state = determine_shipment_state
       end
@@ -135,11 +136,6 @@ module Spree
       shipments.each(&:update_amounts)
     end
 
-    # give each of the shipments a chance to update themselves
-    def update_shipments
-      shipments.each(&:update_state)
-    end
-
     def update_payment_total
       order.payment_total = payments.completed.includes(:refunds).sum { |payment| payment.amount - payment.refunds.sum(:amount) }
     end
@@ -182,6 +178,7 @@ module Spree
     def log_state_change(name)
       state = "#{name}_state"
       old_state = order.public_send(state)
+      binding.irb if name == "shipment"
       yield
       new_state = order.public_send(state)
       if old_state != new_state
