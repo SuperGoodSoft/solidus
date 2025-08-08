@@ -44,35 +44,18 @@ RSpec.describe Spree::Shipment, type: :model do
     expect(shipment).to be_backordered
   end
 
-  context '#determine_state' do
-    it 'returns canceled if order is canceled?' do
-      allow(order).to receive_messages canceled?: true
-      expect(shipment.determine_state(order)).to eq 'canceled'
-    end
+  context "#determine_state" do
+    subject { shipment.determine_state(order) }
 
-    it 'returns pending unless order.can_ship?' do
-      allow(order).to receive_messages can_ship?: false
-      expect(shipment.determine_state(order)).to eq 'pending'
-    end
+    let(:order) { build :order }
+    let(:shipment) { described_class.new }
 
-    it 'returns pending if backordered' do
-      allow(shipment).to receive_messages inventory_units: [mock_model(Spree::InventoryUnit, allow_ship?: false, canceled?: false, shipped?: false)]
-      expect(shipment.determine_state(order)).to eq 'pending'
-    end
+    it "emits a deprecation warning" do
+      allow(Spree.deprecator).to receive(:warn)
 
-    it 'returns shipped when already shipped' do
-      allow(shipment).to receive_messages state: 'shipped'
-      expect(shipment.determine_state(order)).to eq 'shipped'
-    end
+      subject
 
-    it 'returns pending when unpaid' do
-      allow(order).to receive_messages paid?: false
-      expect(shipment.determine_state(order)).to eq 'pending'
-    end
-
-    it 'returns ready when paid' do
-      allow(order).to receive_messages paid?: true
-      expect(shipment.determine_state(order)).to eq 'ready'
+      expect(Spree.deprecator).to have_received(:warn).once
     end
   end
 
@@ -370,11 +353,21 @@ RSpec.describe Spree::Shipment, type: :model do
 
     context "when shipment state changes to shipped" do
       it "should call after_ship" do
+        allow(shipment).to receive(:shipped?).and_return(true)
+        allow(shipment).to receive :after_ship
+        allow(shipment).to receive :update_columns
+
         shipment.state = 'pending'
-        expect(shipment).to receive :after_ship
-        allow(shipment).to receive_messages determine_state: 'shipped'
-        expect(shipment).to receive(:update_columns).with(state: 'shipped', updated_at: kind_of(Time))
-        shipment.update_state
+
+        expect { shipment.update_state }
+          .to change { shipment.state }
+          .from("pending")
+          .to("shipped")
+
+        expect(shipment).to have_received(:after_ship).once
+        expect(shipment)
+          .to have_received(:update_columns)
+          .with(state: 'shipped', updated_at: kind_of(Time))
       end
 
       # Regression test for https://github.com/spree/spree/issues/4347

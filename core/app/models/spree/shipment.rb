@@ -200,13 +200,9 @@ module Spree
       end
     end
 
-    # Determines the appropriate +state+ according to the following logic:
-    #
-    # canceled   if order is canceled
-    # pending    unless order is complete and +order.payment_state+ is +paid+
-    # shipped    if already shipped (ie. does not change the state)
-    # ready      all other cases
     def determine_state(order)
+      Spree.deprecator.warn "Use Spree::Shipment#recalculate_state instead"
+
       return 'canceled' if order.canceled?
       return 'shipped' if shipped?
       return 'pending' unless order.can_ship?
@@ -217,6 +213,12 @@ module Spree
       end
     end
 
+    # Assigns the appropriate +state+ according to the following logic:
+    #
+    # canceled   if order is canceled
+    # pending    unless order is complete and +order.payment_state+ is +paid+
+    # shipped    if already shipped (ie. does not change the state)
+    # ready      all other cases
     def recalculate_state
       self.state =
         if order.canceled?
@@ -307,12 +309,9 @@ module Spree
     # called.
     def update_state
       old_state = state
-      new_state = determine_state(order)
+      new_state = recalculate_state
       if new_state != old_state
-        update_columns(
-          state: new_state,
-          updated_at: Time.current
-        )
+        update_columns state: new_state, updated_at: Time.current
         after_ship if new_state == 'shipped'
       end
     end
