@@ -60,6 +60,10 @@ RSpec.describe Spree::AppConfiguration do
     expect(prefs.mergeable_orders_finder_class).to eq Spree::MergeableOrdersFinder
   end
 
+  it "uses the order recalculation context class by default" do
+    expect(prefs.order_recalculation_context_class).to eq Spree::OrderRecalculation::Context
+  end
+
   context "deprecated preferences" do
     around do |example|
       Spree.deprecator.silence do

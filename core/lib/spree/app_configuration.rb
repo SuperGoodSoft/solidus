@@ -391,6 +391,15 @@ module Spree
     #   Spree::OrderUpdater.
     class_name_attribute :order_recalculator_class, default: "Spree::OrderUpdater"
 
+    # Allows providing a different context object to the order-recalculation
+    # middleware chain. A custom class can expose additional shared state to its
+    # own middlewares.
+    # @!attribute [rw] order_recalculation_context_class
+    # @see Spree::OrderRecalculation::Context
+    # @return [Class] an object whose `new(order:, persist:)` constructor
+    #   returns a context with `#order` and `#persist?`.
+    class_name_attribute :order_recalculation_context_class, default: "Spree::OrderRecalculation::Context"
+
     # Allows providing your own Mailer for reimbursement mailer.
     #
     # @!attribute [rw] reimbursement_mailer_class
