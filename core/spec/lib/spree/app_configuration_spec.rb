@@ -64,6 +64,39 @@ RSpec.describe Spree::AppConfiguration do
     expect(prefs.order_recalculation_context_class).to eq Spree::OrderRecalculation::Context
   end
 
+  describe "order_recalculation middleware lists" do
+    it "defaults order_recalculation_middlewares to the 14-slot chain" do
+      expect(prefs.order_recalculation_middlewares.map(&:name)).to eq([
+        "Spree::OrderRecalculation::Middlewares::Event",
+        "Spree::OrderRecalculation::Middlewares::Transaction",
+        "Spree::OrderRecalculation::Middlewares::Persist",
+        "Spree::OrderRecalculation::Middlewares::ManipulativeQueryMonitor",
+        "Spree::OrderRecalculation::Middlewares::LineItemPrices",
+        "Spree::OrderRecalculation::Middlewares::ItemCount",
+        "Spree::OrderRecalculation::Middlewares::ShipmentAmounts",
+        "Spree::OrderRecalculation::Middlewares::PaymentTotal",
+        "Spree::OrderRecalculation::Middlewares::ItemTotal",
+        "Spree::OrderRecalculation::Middlewares::ShipmentTotal",
+        "Spree::OrderRecalculation::Middlewares::LegacyPromotionAdjuster",
+        "Spree::OrderRecalculation::Middlewares::TaxAdjustments",
+        "Spree::OrderRecalculation::Middlewares::ItemTotals",
+        "Spree::OrderRecalculation::Middlewares::AdjustmentTotals"
+      ])
+    end
+
+    it "defaults payment_state_recalculation_middlewares to an empty list" do
+      expect(prefs.payment_state_recalculation_middlewares.to_a).to be_empty
+    end
+
+    it "defaults shipment_state_recalculation_middlewares to an empty list" do
+      expect(prefs.shipment_state_recalculation_middlewares.to_a).to be_empty
+    end
+  end
+
+  it "leaves order_recalculator_class as Spree::OrderUpdater by default" do
+    expect(prefs.order_recalculator_class).to eq(Spree::OrderUpdater)
+  end
+
   context "deprecated preferences" do
     around do |example|
       Spree.deprecator.silence do

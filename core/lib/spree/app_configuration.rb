@@ -400,6 +400,41 @@ module Spree
     #   returns a context with `#order` and `#persist?`.
     class_name_attribute :order_recalculation_context_class, default: "Spree::OrderRecalculation::Context"
 
+    # The ordered list of middlewares invoked by `Spree::OrderRecalculator#recalculate`.
+    # Mutate with `<<`, `concat`, `insert_before`, `insert_after`, `delete`.
+    # @!attribute [rw] order_recalculation_middlewares
+    # @return [Spree::Core::ClassConstantizer::List]
+    add_class_list :order_recalculation_middlewares, default: [
+      "Spree::OrderRecalculation::Middlewares::Event",
+      "Spree::OrderRecalculation::Middlewares::Transaction",
+      "Spree::OrderRecalculation::Middlewares::Persist",
+      "Spree::OrderRecalculation::Middlewares::ManipulativeQueryMonitor",
+      "Spree::OrderRecalculation::Middlewares::LineItemPrices",
+      "Spree::OrderRecalculation::Middlewares::ItemCount",
+      "Spree::OrderRecalculation::Middlewares::ShipmentAmounts",
+      "Spree::OrderRecalculation::Middlewares::PaymentTotal",
+      "Spree::OrderRecalculation::Middlewares::ItemTotal",
+      "Spree::OrderRecalculation::Middlewares::ShipmentTotal",
+      "Spree::OrderRecalculation::Middlewares::LegacyPromotionAdjuster",
+      "Spree::OrderRecalculation::Middlewares::TaxAdjustments",
+      "Spree::OrderRecalculation::Middlewares::ItemTotals",
+      "Spree::OrderRecalculation::Middlewares::AdjustmentTotals"
+    ]
+
+    # The ordered list of middlewares invoked by
+    # `Spree::OrderRecalculator#recalculate_payment_state`. Populated in a
+    # later revision.
+    # @!attribute [rw] payment_state_recalculation_middlewares
+    # @return [Spree::Core::ClassConstantizer::List]
+    add_class_list :payment_state_recalculation_middlewares, default: []
+
+    # The ordered list of middlewares invoked by
+    # `Spree::OrderRecalculator#recalculate_shipment_state`. Populated in a
+    # later revision.
+    # @!attribute [rw] shipment_state_recalculation_middlewares
+    # @return [Spree::Core::ClassConstantizer::List]
+    add_class_list :shipment_state_recalculation_middlewares, default: []
+
     # Allows providing your own Mailer for reimbursement mailer.
     #
     # @!attribute [rw] reimbursement_mailer_class
