@@ -29,12 +29,7 @@ module Spree
 
     def run(middlewares, persist: true)
       context = Spree::Config.order_recalculation_context_class.new(order: order, persist: persist)
-
-      chain = middlewares.to_a.reverse.reduce(->(_ctx) {}) { |inner, klass|
-        ->(ctx) { klass.new.call(ctx, &inner) }
-      }
-
-      chain.call(context)
+      Spree::OrderRecalculation::Runner.call(middlewares, context)
     end
   end
 end

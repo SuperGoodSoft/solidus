@@ -65,7 +65,7 @@ RSpec.describe Spree::AppConfiguration do
   end
 
   describe "order_recalculation middleware lists" do
-    it "defaults order_recalculation_middlewares to the 14-slot chain" do
+    it "defaults order_recalculation_middlewares to the 15-slot chain" do
       expect(prefs.order_recalculation_middlewares.map(&:name)).to eq([
         "Spree::OrderRecalculation::Middlewares::Event",
         "Spree::OrderRecalculation::Middlewares::Transaction",
@@ -80,16 +80,22 @@ RSpec.describe Spree::AppConfiguration do
         "Spree::OrderRecalculation::Middlewares::LegacyPromotionAdjuster",
         "Spree::OrderRecalculation::Middlewares::TaxAdjustments",
         "Spree::OrderRecalculation::Middlewares::ItemTotals",
-        "Spree::OrderRecalculation::Middlewares::AdjustmentTotals"
+        "Spree::OrderRecalculation::Middlewares::AdjustmentTotals",
+        "Spree::OrderRecalculation::Middlewares::CompletedState"
       ])
     end
 
-    it "defaults payment_state_recalculation_middlewares to an empty list" do
-      expect(prefs.payment_state_recalculation_middlewares.to_a).to be_empty
+    it "defaults payment_state_recalculation_middlewares to the payment-state sub-chain" do
+      expect(prefs.payment_state_recalculation_middlewares.map(&:name)).to eq([
+        "Spree::OrderRecalculation::Middlewares::AssignPaymentState"
+      ])
     end
 
-    it "defaults shipment_state_recalculation_middlewares to an empty list" do
-      expect(prefs.shipment_state_recalculation_middlewares.to_a).to be_empty
+    it "defaults shipment_state_recalculation_middlewares to the shipment-state sub-chain" do
+      expect(prefs.shipment_state_recalculation_middlewares.map(&:name)).to eq([
+        "Spree::OrderRecalculation::Middlewares::RecalculateShipmentStates",
+        "Spree::OrderRecalculation::Middlewares::AssignShipmentState"
+      ])
     end
   end
 

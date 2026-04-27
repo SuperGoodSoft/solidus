@@ -418,22 +418,28 @@ module Spree
       "Spree::OrderRecalculation::Middlewares::LegacyPromotionAdjuster",
       "Spree::OrderRecalculation::Middlewares::TaxAdjustments",
       "Spree::OrderRecalculation::Middlewares::ItemTotals",
-      "Spree::OrderRecalculation::Middlewares::AdjustmentTotals"
+      "Spree::OrderRecalculation::Middlewares::AdjustmentTotals",
+      "Spree::OrderRecalculation::Middlewares::CompletedState"
     ]
 
     # The ordered list of middlewares invoked by
-    # `Spree::OrderRecalculator#recalculate_payment_state`. Populated in a
-    # later revision.
+    # `Spree::OrderRecalculator#recalculate_payment_state`, and by
+    # `CompletedState` as its payment-state sub-chain.
     # @!attribute [rw] payment_state_recalculation_middlewares
     # @return [Spree::Core::ClassConstantizer::List]
-    add_class_list :payment_state_recalculation_middlewares, default: []
+    add_class_list :payment_state_recalculation_middlewares, default: [
+      "Spree::OrderRecalculation::Middlewares::AssignPaymentState"
+    ]
 
     # The ordered list of middlewares invoked by
-    # `Spree::OrderRecalculator#recalculate_shipment_state`. Populated in a
-    # later revision.
+    # `Spree::OrderRecalculator#recalculate_shipment_state`, and by
+    # `CompletedState` as its shipment-state sub-chain.
     # @!attribute [rw] shipment_state_recalculation_middlewares
     # @return [Spree::Core::ClassConstantizer::List]
-    add_class_list :shipment_state_recalculation_middlewares, default: []
+    add_class_list :shipment_state_recalculation_middlewares, default: [
+      "Spree::OrderRecalculation::Middlewares::RecalculateShipmentStates",
+      "Spree::OrderRecalculation::Middlewares::AssignShipmentState"
+    ]
 
     # Allows providing your own Mailer for reimbursement mailer.
     #
