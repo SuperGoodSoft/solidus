@@ -24,6 +24,20 @@ Spree.config do |config|
   # Uncomment to recalculate cart prices when the cart changes
   # config.recalculate_cart_prices = true
 
+  # Opt into the middleware-chain-based order recalculator. The middleware
+  # lists at `config.order_recalculation_middlewares`,
+  # `config.payment_state_recalculation_middlewares`, and
+  # `config.shipment_state_recalculation_middlewares` can be customised via
+  # `<<`, `concat`, `insert_before`, `insert_after`, and `delete`.
+  #
+  # config.order_recalculator_class = "Spree::OrderRecalculator"
+  #
+  # Example: insert a custom middleware before the persistence step:
+  # config.order_recalculation_middlewares.insert_before(
+  #   "Spree::OrderRecalculation::Middlewares::Persist",
+  #   "MyStore::CustomAuditMiddleware"
+  # )
+
   # Defaults
   # Permission Sets:
 
