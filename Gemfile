@@ -4,6 +4,8 @@ source "https://rubygems.org"
 
 gemspec require: false
 
+gem "solidus_sample", path: "sample", require: false
+
 # rubocop:disable Bundler/DuplicatedGem
 if /(stable|main)/.match? ENV["RAILS_VERSION"]
   gem "rails", github: "rails", require: false, branch: ENV["RAILS_VERSION"]
