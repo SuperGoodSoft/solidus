@@ -66,7 +66,10 @@ Solidus consists of several gems. When you require the `solidus` gem in your
 - [`solidus_api`](https://github.com/solidusio/solidus/tree/master/api) (RESTful API)
 - [`solidus_backend`](https://github.com/solidusio/solidus/tree/master/backend) (Admin area)
 - [`solidus_core`](https://github.com/solidusio/solidus/tree/master/core) (Essential models, mailers, and classes)
-- [`solidus_sample`](https://github.com/solidusio/solidus/tree/master/sample) (Sample data)
+
+Sample data lives in
+[`solidus_sample`](https://github.com/solidusio/solidus/tree/master/sample),
+which the installation generator adds to your `Gemfile`'s `development` group.
 
 All of the gems are designed to work together to provide a fully functional
 e-commerce platform. However, you may only want to use the
@@ -116,6 +119,7 @@ Solidus, use this line:
 
 ```ruby
 gem 'solidus', github: 'solidusio/solidus'
+gem 'solidus_sample', github: 'solidusio/solidus', group: :development
 ```
 
 **Note: The master branch is not guaranteed to ever be in a fully functioning
@@ -136,6 +140,10 @@ bin/rails db:migrate
 bin/rails db:seed
 bin/rails spree_sample:load
 ```
+
+`solidus_sample` is installed in the `development` group of your `Gemfile`. If
+you need to run `spree_sample:load` in another environment, move the gem out of
+the `development` group.
 
 There are also options and rake tasks provided by
 [solidus\_auth\_devise](https://github.com/solidusio/solidus_auth_devise).
