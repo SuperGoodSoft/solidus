@@ -192,6 +192,15 @@ module Solidus
       generate "solidus_admin:install #{"--tailwind" if options[:build_admin_tailwind]}"
     end
 
+    def install_solidus_sample
+      return unless options[:sample]
+
+      say_status :installing, "solidus_sample", :blue
+      unless File.read(app_path.join("Gemfile")).include?("solidus_sample")
+        bundle_command "add solidus_sample --group development"
+      end
+    end
+
     def populate_seed_data
       if @load_seed_data
         say_status :loading, "seed data"

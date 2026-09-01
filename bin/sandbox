@@ -68,6 +68,7 @@ cat <<RUBY >> Gemfile
 
 gem 'solidus', path: '..'
 gem 'solidus_admin', path: '../admin'
+gem 'solidus_sample', path: '../sample', group: :development
 gem 'rails-i18n'
 gem 'solidus_i18n'
 

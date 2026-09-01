@@ -79,6 +79,40 @@ RSpec.describe Solidus::InstallGenerator do
     end
   end
 
+  describe "#install_solidus_sample" do
+    it "adds solidus_sample to the app Gemfile in the development group" do
+      generator = described_class.new([], ["--auto-accept"])
+      allow(generator).to receive(:say_status)
+      allow(File).to receive(:read).and_call_original
+      allow(File).to receive(:read).with(generator.app_path.join("Gemfile")).and_return("gem 'rails'")
+
+      expect(generator).to receive(:bundle_command).with("add solidus_sample --group development")
+
+      generator.install_solidus_sample
+    end
+
+    it "does not add solidus_sample when it is already in the Gemfile" do
+      generator = described_class.new([], ["--auto-accept"])
+      allow(generator).to receive(:say_status)
+      allow(File).to receive(:read).and_call_original
+      allow(File).to receive(:read).with(generator.app_path.join("Gemfile"))
+        .and_return("gem 'solidus_sample', path: '../sample'")
+
+      expect(generator).not_to receive(:bundle_command)
+
+      generator.install_solidus_sample
+    end
+
+    it "does not add solidus_sample when sample data is disabled" do
+      generator = described_class.new([], ["--auto-accept", "--sample=false"])
+      allow(generator).to receive(:say_status)
+
+      expect(generator).not_to receive(:bundle_command)
+
+      generator.install_solidus_sample
+    end
+  end
+
   describe "failure handling" do
     it "aborts instead of continuing when migrations fail" do
       generator = described_class.new([], ["--auto-accept"])
