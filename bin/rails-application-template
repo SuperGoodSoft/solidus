@@ -18,6 +18,8 @@ if $0 == __FILE__
 end
 
 gem 'solidus'
+# The app.json postdeploy script runs spree_sample:load in production
+gem 'solidus_sample'
 gem 'solidus_auth_devise', github: 'solidusio/solidus_auth_devise', branch: 'main'
 gem 'rails_12factor'
 
