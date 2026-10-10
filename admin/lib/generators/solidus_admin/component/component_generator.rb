@@ -20,6 +20,8 @@ module SolidusAdmin
       # This is needed because the generator won't run the initialization process,
       # in order to ensure that UI is not rendered as Ui we need to setup inflections
       # manually.
+      return if ActiveSupport::Inflector.inflections.acronyms.key?("ui")
+
       SolidusAdmin::Engine.initializers.find { _1.name =~ /inflections/ }.run
     end
 
