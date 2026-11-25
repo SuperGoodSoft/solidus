@@ -20,5 +20,27 @@ RSpec.describe Spree::Admin::PreferenceFieldsHelper, type: :helper do
         </div>
       HTML
     end
+
+    context "with a select preference whose options have no translations" do
+      subject do
+        helper.form_for(object, as: :calculator, url: "/") do |form|
+          concat helper.preference_field_for(form, :speed)
+        end
+      end
+
+      let(:object) { calculator_class.new }
+      let(:calculator_class) do
+        Class.new(Spree::Calculator) do
+          preference :speed, :select, options: [:fast, :slow]
+        end
+      end
+
+      before { stub_const("UntranslatedCalculator", calculator_class) }
+
+      it "falls back to the option itself for the label" do
+        expect(subject).to have_css("option[value='fast']", exact_text: "fast")
+        expect(subject).to have_css("option[value='slow']", exact_text: "slow")
+      end
+    end
   end
 end

@@ -25,7 +25,7 @@ class SolidusAdmin::UI::PreferenceFields::Select::Component < SolidusAdmin::UI::
 
     options.map { |option|
       key = option.to_s.parameterize.underscore
-      label = I18n.t("#{namespace}.#{attribute_method}.#{key}", default: option)
+      label = I18n.t("#{namespace}.#{attribute_method}.#{key}", default: option.to_s)
       [label, option]
     }
   end
