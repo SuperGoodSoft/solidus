@@ -7,8 +7,6 @@ module Spree
       before_action :load_payment_method_types, except: [:index]
       before_action :validate_payment_method_type, only: [:create, :update]
 
-      helper "spree/admin/preference_fields"
-
       respond_to :html
 
       def create

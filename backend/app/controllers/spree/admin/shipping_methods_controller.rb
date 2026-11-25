@@ -7,8 +7,6 @@ module Spree
       before_action :set_shipping_category, only: [:create, :update]
       before_action :set_zones, only: [:create, :update]
 
-      helper "spree/admin/preference_fields"
-
       def destroy
         @object.discard
 
